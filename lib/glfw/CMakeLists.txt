@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
-if (APPLE)
-    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-    set(CMAKE_HAVE_THREADS_LIBRARY 1)
-    set(CMAKE_USE_WIN32_THREADS_INIT 0)
-    set(CMAKE_USE_PTHREADS_INIT 1)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-endif ()
-
 if (POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
 endif()

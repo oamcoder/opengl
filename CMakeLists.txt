@@ -25,3 +25,9 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME} glfw)
+
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+        copy_directory ${PROJECT_SOURCE_DIR}/res/shader ${EXECUTABLE_OUTPUT_PATH}/res/shader
+)

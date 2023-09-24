@@ -28,12 +28,13 @@ const char *fragmentShaderSource = "#version 330 core\n"
                                    "}\n\0";
 
 int main() {
-    if (!glfwInit())
+    if (!glfwInit()) {
+        std::cout << "glfwInit error!" << std::endl;
         return -1;
+    }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif

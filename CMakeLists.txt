@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4...3.20)
-project(opengl)
+project(opengl C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
@@ -26,8 +26,10 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} glfw)
 
-add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E
-        copy_directory ${PROJECT_SOURCE_DIR}/res/shader ${EXECUTABLE_OUTPUT_PATH}/res/shader
-)
+if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+    add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E
+            copy_directory ${PROJECT_SOURCE_DIR}/res/shader ${EXECUTABLE_OUTPUT_PATH}/res/shader
+    )
+endif ()

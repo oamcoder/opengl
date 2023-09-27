@@ -1,9 +1,9 @@
 #include "ShaderManager.h"
 
-ShaderManager::ShaderSource loadShader(const std::string &shaderPath) {
+static ShaderManager::ShaderSource loadShader(const std::string &shaderPath) {
     std::ifstream stream(shaderPath);
     std::string content;
-    ShaderManager::ShaderType type = ShaderManager::ShaderType::None;
+    ShaderManager::ShaderType type;
     std::stringstream stringStream[2];
     while (std::getline(stream, content)) {
         if (content.find("#glsl") != std::string::npos) {
@@ -19,7 +19,7 @@ ShaderManager::ShaderSource loadShader(const std::string &shaderPath) {
     return {stringStream[0].str(), stringStream[1].str()};
 }
 
-unsigned int compileShader(unsigned int type, const std::string &source) {
+static unsigned int compileShader(unsigned int type, const std::string &source) {
     unsigned int shader = glCreateShader(type);
     const char *src = source.c_str();
     glShaderSource(shader, 1, &src, nullptr);

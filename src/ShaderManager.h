@@ -9,7 +9,6 @@
 
 namespace ShaderManager {
     enum ShaderType {
-        None = -1,
         Vertex = 0,
         Fragment = 1
     };

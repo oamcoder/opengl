@@ -26,7 +26,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} glfw)
 
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+if ("${CMAKE_BUILD_TYPE}" STREQUAL Release)
     add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E

@@ -14,7 +14,7 @@ elseif (APPLE)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif ()
 
-include_directories(include)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 aux_source_directory(src SRC_LIST)
 
 add_subdirectory(lib/glfw)

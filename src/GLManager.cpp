@@ -1,18 +1,16 @@
 #include "GLManager.h"
-#include "ShaderManager.h"
+#include "Shader.h"
 
 GLFWwindow *GLFW::window;
 
-static void bindData() {
+static void init() {
     float vertices[] = {
-            -0.5f, -0.5f,
-            0.5f, -0.5f,
-            0.5f, 0.5f,
-            -0.5f, 0.5f
+            -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+            0, 0.5f, 0.0f, 0.0f, 1.0f,
     };
     int indices[] = {
-            0, 1, 3,
-            1, 3, 2
+            0, 1, 2,
     };
 
     /** 核心渲染模式必须使用vao
@@ -26,31 +24,35 @@ static void bindData() {
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+
+    /** 位置属性 */
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(0);
+    /** 颜色属性 */
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     unsigned int ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-
     /** 设置线框模式 */
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-static void useShaderProgram() {
-    unsigned int shaderProgram = ShaderManager::CreateShaderProgram("res/shader/base.glsl");
-    glUseProgram(shaderProgram);
-}
-
-static void render() {
+static void render(Shader shader) {
     glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     /** 画数组 */
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
     /** 画索引 */
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+    /** uniform数据传输 */
+//    auto timeValue = static_cast<float>(glfwGetTime());
+//    auto greenValue = static_cast<float>(sin(timeValue) / 2.0f + 0.5f);
+//    shader.Set4f("vertexColor", 0.9f, greenValue, 0.3f, 1.0f);
 }
 
 bool GLFW::Init() {
@@ -87,11 +89,12 @@ bool GLFW::Init() {
 }
 
 void GLFW::MainLoop() {
-    bindData();
-    useShaderProgram();
+    init();
+    auto shader = Shader::Create("res/shader/base.glsl");
+    shader.Use();
     while (!glfwWindowShouldClose(window)) {
         /** 渲染 */
-        render();
+        render(shader);
         /** 交换缓冲区 */
         glfwSwapBuffers(window);
         /** 轮询并处理事件 */

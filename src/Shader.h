@@ -6,8 +6,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
-namespace ShaderManager {
+class Shader {
+public:
     enum ShaderType {
         Vertex = 0,
         Fragment = 1
@@ -18,5 +20,12 @@ namespace ShaderManager {
         std::string FragmentSource;
     };
 
-    unsigned int CreateShaderProgram(const std::string& shaderPath);
-}
+    static Shader Create(const std::string &shaderPath);
+
+    void Use() const;
+    void Set4f(const std::string &string, float a, float b, float c, float d) const;
+
+private:
+    unsigned int id;
+    explicit Shader(unsigned int id);
+};

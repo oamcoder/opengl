@@ -2,6 +2,31 @@
 
 static const std::string CommentStr = "//";
 
+void checkError(unsigned int type, unsigned int shader, unsigned int shaderType) {
+    int success;
+    type == GL_COMPILE_STATUS ?
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success) :
+    glGetProgramiv(shader, GL_LINK_STATUS, &success);
+    if (GL_FALSE == success) {
+        int length;
+        type == GL_COMPILE_STATUS ?
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length) :
+        glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &length);
+        char *message = static_cast<char *>(alloca(length * sizeof(char)));
+        type == GL_COMPILE_STATUS ?
+        glGetShaderInfoLog(shader, length, &length, message) :
+        glGetProgramInfoLog(shader, length, &length, message);
+        if (type == GL_COMPILE_STATUS) {
+            std::cout << "Failed to compile "
+                      << (shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment")
+                      << "shader" << std::endl;
+            std::cout << message << std::endl;
+        } else {
+            std::cout << "Link error: " << message << std::endl;
+        }
+    }
+}
+
 Shader::ShaderSource loadShader(const std::string &shaderPath) {
     std::ifstream stream(shaderPath);
     std::string content;
@@ -27,18 +52,7 @@ unsigned int compileShader(unsigned int type, const std::string &source) {
     const char *src = source.c_str();
     glShaderSource(shader, 1, &src, nullptr);
     glCompileShader(shader);
-    int success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (GL_FALSE == success) {
-        int length;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-        char *message = static_cast<char *>(alloca(length * sizeof(char)));
-        glGetShaderInfoLog(shader, length, &length, message);
-        std::cout << "Failed to compile "
-                  << (type == GL_VERTEX_SHADER ? "vertex" : "fragment")
-                  << "shader" << std::endl;
-        std::cout << message << std::endl;
-    }
+    checkError(GL_COMPILE_STATUS, shader, type);
     return shader;
 }
 
@@ -47,23 +61,12 @@ Shader Shader::Create(const std::string &shaderPath) {
     unsigned int program = glCreateProgram();
     unsigned int vs = compileShader(GL_VERTEX_SHADER, source.VertexSource);
     unsigned int fs = compileShader(GL_FRAGMENT_SHADER, source.FragmentSource);
-
     glAttachShader(program, vs);
     glAttachShader(program, fs);
     glLinkProgram(program);
-    int success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (GL_FALSE == success) {
-        int length;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-        char *message = static_cast<char *>(alloca(length * sizeof(char)));
-        glGetProgramInfoLog(program, length, &length, message);
-        std::cout << "Link error: " << message << std::endl;
-    }
-
+    checkError(GL_LINK_STATUS, program, 0);
     glDeleteShader(vs);
     glDeleteShader(fs);
-
     return Shader(program);
 }
 
